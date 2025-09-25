@@ -3,13 +3,12 @@ from streamlit_drawable_canvas import st_canvas
 from tensorflow.keras.models import load_model
 import numpy as np
 from PIL import Image, ImageOps
-import cv2
 
 # ----------------------------
 # Load MNIST model
 # ----------------------------
 MODEL_PATH = "mnist_model.keras"  # or "mnist_model.h5"
-model = load_model(MODEL_PATH)
+model = load_model(MODEL_PATH, compile=False)  # compile=False avoids TF version issues
 
 # ----------------------------
 # Page config
@@ -69,10 +68,10 @@ canvas_result = st_canvas(
 # ----------------------------
 def preprocess_image(img: Image.Image):
     img = img.convert("L")  # grayscale
-    img = img.resize((28, 28), Image.Resampling.LANCZOS)  # resize
+    img = img.resize((28, 28), Image.Resampling.LANCZOS)
     img_array = np.array(img)
     img_array = 255 - img_array  # invert colors
-    img_array = (img_array > 50).astype(float)  # threshold
+    img_array = (img_array > 50).astype(float)  # threshold for cleaner prediction
     img_array = img_array.reshape(1, 28, 28, 1)  # shape for model
     return img_array
 
